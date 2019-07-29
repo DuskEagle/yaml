@@ -11,6 +11,8 @@ import (
 	"strings"
 	"time"
 	"unicode/utf8"
+
+	am_config "github.com/prometheus/alertmanager/config"
 )
 
 // jsonNumber is the interface of the encoding/json.Number datatype.
@@ -117,6 +119,10 @@ func (e *encoder) marshal(tag string, in reflect.Value) {
 		}
 		// fallback case - no number could be obtained
 		in = reflect.ValueOf(m.String())
+	case am_config.Secret:
+		in = reflect.ValueOf(string(m))
+	case am_config.SecretURL:
+		in = reflect.ValueOf(am_config.URL(m).String())
 	case time.Time, *time.Time:
 		// Although time.Time implements TextMarshaler,
 		// we don't want to treat it as a string for YAML
